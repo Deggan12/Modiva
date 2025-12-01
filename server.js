@@ -1,162 +1,581 @@
-// Root launcher: start the real backend from /carte-handicap-backend
-console.log('🚀 Starting backend from ./carte-handicap-backend/server.js');
+const express = require('express');
+const mysql = require('mysql2');
+const bcrypt = require('bcryptjs');
+const multer = require('multer');
+const path = require('path');
+const cors = require('cors');
+const fs = require('fs');
+const dotenv = require('dotenv');
 
-import './carte-handicap-backend/server.js';
+dotenv.config();
 
+const app = express();
+const PORT = process.env.PORT || 3000;
 
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static('uploads'));
 
-// // server.js - Backend for Carte Canadienne du Handicap
+const connectionString = process.env.MYSQL_URL || process.env.DATABASE_URL;
 
-// import express from "express";
-// import mysql from "mysql2";
-// import bcrypt from "bcryptjs";
-// import multer from "multer";
-// import path from "path";
-// import cors from "cors";
-// import fs from "fs";
-// import dotenv from "dotenv";
+if (connectionString) {
+  console.log('Using connection string (MYSQL_URL)');
+  var db = mysql.createConnection(connectionString);
+} else {
+  const dbHost = process.env.MYSQLHOST;
+  const dbUser = process.env.MYSQLUSER;
+  const dbPassword = process.env.MYSQLPASSWORD;
+  const dbName = process.env.MYSQLDATABASE;
+  const dbPort = process.env.MYSQLPORT || 3306;
 
-// dotenv.config();
-// railway 
-// const app = express();
-// const PORT = process.env.PORT || 3000;
+  console.log('Using individual MySQL vars:', {
+    host: dbHost,
+    user: dbUser,
+    database: dbName,
+    port: dbPort,
+    hasPassword: !!dbPassword
+  });
 
-// // ---------------- Middleware ----------------
-// app.use(cors());
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
-// app.use("/uploads", express.static("uploads"));
+  if (!dbHost || !dbUser || !dbName) {
+    console.error('Missing MySQL connection info');
+    process.exit(1);
+  }
 
-// // ---------------- File Uploads ----------------
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     const uploadPath = "uploads/";
-//     if (!fs.existsSync(uploadPath)) {
-//       fs.mkdirSync(uploadPath);
-//     }
-//     cb(null, uploadPath);
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, Date.now() + path.extname(file.originalname));
-//   },
-// });
-// const upload = multer({ storage });
+  var db = mysql.createConnection({
+    host: dbHost,
+    user: dbUser,
+    password: dbPassword,
+    database: dbName,
+    port: dbPort,
+  });
+}
 
-// // ---------------- Database ----------------
-// const db = mysql.createConnection({
-//   host: process.env.MYSQLHOST || "mysql.railway.internal",
-//   user: process.env.MYSQLUSER,
-//   password: process.env.MYSQLPASSWORD,
-//   database: process.env.MYSQLDATABASE,
-//   port: process.env.MYSQLPORT || 3306,
-// });
+db.connect((err) => {
+  if (err) {
+    console.error('MySQL connection failed:', err.message);
+    console.error('Full error:', err);
+    process.exit(1);
+  }
+  console.log('MySQL connected successfully');
+});
 
-// db.connect((err) => {
-//   if (err) {
-//     console.error("Erreur de connexion à la base de données:", err);
-//     process.exit(1);
-//   } else {
-//     console.log("✅ Connecté à la base de données MySQL sur Railway");
-//   }
-// });
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    message: 'Modiva API is running',
+    timestamp: new Date().toISOString()
+  });
+});
 
-// // ---------------- Routes ----------------
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = './uploads/documents';
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(file.originalname);
+    cb(null, uniqueName);
+  }
+});
 
-// // Root
-// app.get("/", (req, res) => {
-//   res.send("API Carte Canadienne du Handicap - Backend en ligne");
-// });
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /pdf|jpg|jpeg|png/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    
+    if (extname && mimetype) {
+      return cb(null, true);
+    } else {
+      cb(new Error('Format de fichier non supporté'));
+    }
+  }
+});
 
-// // 1️⃣ Register a new user
-// app.post("/register", async (req, res) => {
-//   const { name, email, password, disability_category } = req.body;
+function assignServicesToUser(userId) {
+  const getHandicaps = 'SELECT handicap_type_id FROM user_handicaps WHERE user_id = ?';
 
-//   if (!name || !email || !password) {
-//     return res.status(400).json({ error: "Champs requis manquants" });
-//   }
+  db.query(getHandicaps, [userId], (err, handicaps) => {
+    if (err) {
+      console.error('Erreur getHandicaps:', err);
+      return;
+    }
 
-//   try {
-//     const hashedPassword = await bcrypt.hash(password, 10);
-//     db.query(
-//       "INSERT INTO users (name, email, password, disability_category, approved) VALUES (?, ?, ?, ?, 0)",
-//       [name, email, hashedPassword, disability_category],
-//       (err) => {
-//         if (err) {
-//           console.error("Erreur lors de l'inscription:", err);
-//           return res.status(500).json({ error: "Erreur serveur" });
-//         }
-//         res.status(201).json({ message: "Utilisateur enregistré avec succès" });
-//       }
-//     );
-//   } catch (error) {
-//     console.error("Erreur inattendue lors de l'inscription:", error);
-//     res.status(500).json({ error: "Erreur interne du serveur" });
-//   }
-// });
+    handicaps.forEach((h) => {
+      const getServices = 'SELECT accommodation_id FROM handicap_services WHERE handicap_type_id = ?';
 
-// // 2️⃣ Approve a user and automatically assign a free card
-// app.post("/approve-user", (req, res) => {
-//   const { userId } = req.body;
+      db.query(getServices, [h.handicap_type_id], (err, services) => {
+        if (err) {
+          console.error('Erreur getServices:', err);
+          return;
+        }
 
-//   if (!userId) {
-//     return res.status(400).json({ error: "User ID requis" });
-//   }
+        if (services.length > 0) {
+          const insertLinks = 'INSERT INTO user_accommodation_link (user_id, accommodation_id) VALUES ?';
+          const values = services.map((s) => [userId, s.accommodation_id]);
 
-//   // Find first unassigned card
-//   const findCard = "SELECT uid FROM cards WHERE assigned = 0 LIMIT 1";
-//   db.query(findCard, (err, cardResults) => {
-//     if (err) {
-//       console.error("Erreur lors de la recherche de carte:", err);
-//       return res.status(500).json({ error: "Erreur serveur" });
-//     }
+          db.query(insertLinks, [values], (err) => {
+            if (err) console.error('Erreur insertLinks:', err);
+          });
+        }
+      });
+    });
+  });
+}
 
-//     if (cardResults.length === 0) {
-//       return res.status(400).json({ error: "Aucune carte disponible" });
-//     }
+app.get('/api/admin/pending-users', (req, res) => {
+  const query = `
+    SELECT id, prenom, nom, email, proof_document, status, created_at
+    FROM user_info
+    WHERE status = 'pending'
+    ORDER BY created_at DESC
+  `;
+  
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching pending users:', err);
+      return res.status(500).json({ message: 'Erreur serveur', error: err.message });
+    }
+    console.log(`Found ${results.length} pending users`);
+    res.json(results);
+  });
+});
 
-//     const cardUID = cardResults[0].uid;
+app.post('/api/validation/valider/:userId', (req, res) => {
+  const userId = req.params.userId;
+  const { approuve } = req.body;
+  const newStatus = approuve ? 'approved' : 'rejected';
 
-//     // Assign UID to user and mark approved
-//     const assignUser = "UPDATE users SET uid = ?, approved = 1 WHERE id = ?";
-//     db.query(assignUser, [cardUID, userId], (err) => {
-//       if (err) {
-//         console.error("Erreur lors de la mise à jour de l'utilisateur:", err);
-//         return res.status(500).json({ error: "Erreur serveur" });
-//       }
+  console.log(`Validating user ${userId}: ${newStatus}`);
 
-//       // Mark card as assigned
-//       const markCard = "UPDATE cards SET assigned = 1 WHERE uid = ?";
-//       db.query(markCard, [cardUID], (err) => {
-//         if (err) {
-//           console.error("Erreur lors de la mise à jour de la carte:", err);
-//           return res.status(500).json({ error: "Erreur serveur" });
-//         }
+  const updateUser = 'UPDATE user_info SET status = ? WHERE id = ?';
+  db.query(updateUser, [newStatus, userId], (err, result) => {
+    if (err) {
+      console.error('Erreur update user:', err);
+      return res.status(500).json({ message: 'Erreur lors de la validation' });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Utilisateur introuvable' });
+    }
 
-//         res.json({
-//           success: true,
-//           message: "Utilisateur approuvé et carte assignée",
-//           uid: cardUID,
-//         });
-//       });
-//     });
-//   });
-// });
+    if (!approuve) {
+      return res.json({ message: 'Utilisateur rejeté avec succès' });
+    }
 
-// // 3️⃣ Arduino RFID scan verification
-// app.post("/scan", (req, res) => {
-//   const { uid } = req.body;
+    assignServicesToUser(userId);
 
-//     db.query(query, (err, results) => {
-//         if (err) {
-//             console.error(err);
-//             return res.status(500).json({ message: 'Erreur serveur' });
-//         }
+    const checkRFID = 'SELECT * FROM rfid WHERE user_id = ? LIMIT 1';
+    db.query(checkRFID, [userId], (err, existing) => {
+      if (err) {
+        console.error('Erreur checkRFID:', err);
+        return res.status(500).json({ message: 'Erreur vérification RFID' });
+      }
 
-//         res.json(results);
-//     });
-// });
+      if (existing.length > 0) {
+        return res.json({
+          message: `Utilisateur approuvé (RFID: ${existing[0].rfid_tag})`
+        });
+      }
 
-// // ---------------- Start Server ----------------
-// app.listen(PORT, () => {
-//     console.log(`Serveur démarré sur le port ${PORT}`);
-// });
+      const findRFID = 'SELECT id, rfid_tag FROM rfid WHERE user_id IS NULL LIMIT 1';
+      db.query(findRFID, (err, rfidResults) => {
+        if (err) {
+          console.error('Erreur findRFID:', err);
+          return res.status(500).json({ message: 'Erreur recherche RFID' });
+        }
+
+        if (rfidResults.length === 0) {
+          return res.json({
+            message: 'Utilisateur approuvé (aucun RFID disponible)'
+          });
+        }
+
+        const rfid = rfidResults[0];
+        const assignRFID = 'UPDATE rfid SET user_id = ? WHERE id = ?';
+        db.query(assignRFID, [userId, rfid.id], (err2) => {
+          if (err2) {
+            console.error('Erreur assignRFID:', err2);
+            return res.status(500).json({ message: 'Erreur assignation RFID' });
+          }
+
+          res.json({
+            message: `Utilisateur approuvé et RFID ${rfid.rfid_tag} assigné`,
+            assigned_rfid: rfid.rfid_tag
+          });
+        });
+      });
+    });
+  });
+});
+
+app.get('/api/verify/:numeroCompte', (req, res) => {
+  const numeroCompte = req.params.numeroCompte;
+
+  const userQuery = `
+    SELECT id, prenom, nom, email, numero_de_compte, status
+    FROM user_info
+    WHERE numero_de_compte = ?
+  `;
+
+  db.query(userQuery, [numeroCompte], (err, userResults) => {
+    if (err) {
+      console.error('Erreur verify user:', err);
+      return res.status(500).json({ message: 'Erreur serveur' });
+    }
+
+    if (userResults.length === 0) {
+      return res.status(404).json({ message: 'Numéro de compte introuvable' });
+    }
+
+    const user = userResults[0];
+
+    if (user.status !== 'approved') {
+      return res.status(403).json({ 
+        message: 'Ce compte n\'est pas encore validé',
+        status: user.status 
+      });
+    }
+
+    const servicesQuery = `
+      SELECT DISTINCT a.service_name, a.service_description, a.province
+      FROM user_accommodation_link ual
+      JOIN accommodation_info a ON ual.accommodation_id = a.accommodation_id
+      WHERE ual.user_id = ?
+      ORDER BY a.service_name
+    `;
+
+    db.query(servicesQuery, [user.id], (err2, services) => {
+      if (err2) {
+        console.error('Erreur verify services:', err2);
+        return res.status(500).json({ message: 'Erreur serveur' });
+      }
+
+      res.json({
+        user: {
+          firstName: user.prenom,
+          lastName: user.nom,
+          email: user.email,
+          numeroCompte: user.numero_de_compte
+        },
+        services: services
+      });
+    });
+  });
+});
+
+app.post('/api/inscription', upload.single('proofDocument'), async (req, res) => {
+  try {
+    const { prenom, nom, email, adresse, password, handicapTypes } = req.body;
+
+    if (!prenom || !nom || !email || !password || !handicapTypes) {
+      return res.status(400).json({ message: 'Tous les champs sont requis' });
+    }
+    if (!req.file) {
+      return res.status(400).json({ message: 'Document médical requis' });
+    }
+
+    const checkEmail = 'SELECT id FROM user_info WHERE email = ?';
+    db.query(checkEmail, [email], async (err, results) => {
+      if (err) return res.status(500).json({ message: 'Erreur serveur' });
+      if (results.length > 0) {
+        return res.status(400).json({ message: 'Cet email est déjà utilisé' });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const numeroCompte = 'ACC' + Date.now().toString().slice(-9);
+
+      const insertUser = `
+        INSERT INTO user_info (email, password, prenom, nom, adresse, numero_de_compte, proof_document, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')
+      `;
+      
+      db.query(insertUser, [email, hashedPassword, prenom, nom, adresse, numeroCompte, req.file.filename], (err2, result) => {
+        if (err2) {
+          console.error('Insert user error:', err2);
+          return res.status(500).json({ message: 'Erreur lors de l\'inscription' });
+        }
+
+        const userId = result.insertId;
+
+        let raw = handicapTypes;
+        let ids = [];
+        if (Array.isArray(raw)) {
+          ids = raw;
+        } else if (typeof raw === 'string') {
+          try {
+            const j = JSON.parse(raw);
+            ids = Array.isArray(j) ? j : [j];
+          } catch {
+            ids = raw.includes(',') ? raw.split(',') : [raw];
+          }
+        } else if (raw != null) {
+          ids = [raw];
+        }
+        ids = ids.map(v => parseInt(String(v).trim(), 10)).filter(Number.isFinite);
+
+        if (ids.length > 0) {
+          const insertHandicaps = 'INSERT INTO user_handicaps (user_id, handicap_type_id) VALUES ?';
+          const values = ids.map(id => [userId, id]);
+          db.query(insertHandicaps, [values], (err3) => {
+            if (err3) console.error('Erreur insertHandicaps:', err3);
+            return res.status(201).json({
+              message: 'Inscription réussie! Votre document sera vérifié.',
+              numeroCompte,
+              userId
+            });
+          });
+        } else {
+          return res.status(201).json({
+            message: 'Inscription réussie! Votre document sera vérifié.',
+            numeroCompte,
+            userId
+          });
+        }
+      });
+    });
+  } catch (error) {
+    console.error('Registration error:', error);
+    return res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
+
+app.post('/api/login', (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email et mot de passe requis' });
+  }
+
+  const query = 'SELECT * FROM user_info WHERE email = ?';
+  db.query(query, [email], async (err, results) => {
+    if (err) return res.status(500).json({ message: 'Erreur serveur' });
+    if (results.length === 0) return res.status(401).json({ message: 'Email ou mot de passe incorrect' });
+
+    const user = results[0];
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ message: 'Email ou mot de passe incorrect' });
+
+    if (user.status === 'pending') {
+      return res.status(403).json({ message: 'Votre compte est en attente de validation', statut: 'pending' });
+    }
+    if (user.status === 'rejected') {
+      return res.status(403).json({ message: 'Votre demande a été rejetée', statut: 'rejected' });
+    }
+
+    res.json({ message: 'Connexion réussie', userId: user.id, numeroCompte: user.numero_de_compte, statut: user.status });
+  });
+});
+
+app.get('/api/user/:id', (req, res) => {
+  const userId = req.params.id;
+  const query = `
+    SELECT 
+      prenom AS first_name,
+      nom AS last_name,
+      email,
+      adresse AS address,
+      numero_de_compte
+    FROM user_info 
+    WHERE id = ?
+  `;
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error('Erreur MySQL:', err);
+      return res.status(500).json({ message: 'Erreur serveur' });
+    }
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé' });
+    }
+    res.json(results[0]);
+  });
+});
+
+app.get('/api/user/:id/services', (req, res) => {
+  const userId = req.params.id;
+
+  const query = `
+    SELECT DISTINCT a.service_name, a.service_description, a.province
+    FROM user_accommodation_link ual
+    JOIN accommodation_info a ON ual.accommodation_id = a.accommodation_id
+    WHERE ual.user_id = ?
+    ORDER BY a.service_name
+  `;
+
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error('Erreur services:', err);
+      return res.status(500).json({ message: 'Erreur serveur' });
+    }
+
+    res.json(results);
+  });
+});
+
+app.get('/api/cities/:province', (req, res) => {
+  const province = req.params.province;
+  
+  const query = 'SELECT DISTINCT city FROM government_locations WHERE province = ? ORDER BY city';
+  db.query(query, [province], (err, results) => {
+    if (err) {
+      console.error('Error fetching cities:', err);
+      return res.status(500).json({ message: 'Erreur serveur' });
+    }
+    
+    const cities = results.map(row => row.city);
+    res.json(cities);
+  });
+});
+
+app.get('/api/locations/:province/:city', (req, res) => {
+  const { province, city } = req.params;
+  
+  const query = `
+    SELECT location_id, location_name, address, phone_number, postal_code, city, province
+    FROM government_locations 
+    WHERE province = ? AND city = ?
+    ORDER BY location_name
+  `;
+  
+  db.query(query, [province, city], (err, results) => {
+    if (err) {
+      console.error('Error fetching locations:', err);
+      return res.status(500).json({ message: 'Erreur serveur' });
+    }
+    
+    res.json(results);
+  });
+});
+
+app.post('/api/appointments', (req, res) => {
+  const { userId, locationId, appointmentDate, appointmentTime, appointmentType, notes } = req.body;
+  
+  if (!userId || !locationId || !appointmentDate || !appointmentTime || !appointmentType) {
+    return res.status(400).json({ message: 'Tous les champs requis sont manquants' });
+  }
+  
+  const query = `
+    INSERT INTO card_appointments (user_id, location_id, appointment_date, appointment_time, appointment_type, notes)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `;
+  
+  db.query(query, [userId, locationId, appointmentDate, appointmentTime, appointmentType, notes], (err, result) => {
+    if (err) {
+      console.error('Error creating appointment:', err);
+      return res.status(500).json({ message: 'Erreur lors de la création du rendez-vous' });
+    }
+    
+    res.status(201).json({
+      message: 'Rendez-vous créé avec succès',
+      appointmentId: result.insertId
+    });
+  });
+});
+
+app.get('/api/user/:id/appointments', (req, res) => {
+  const userId = req.params.id;
+  
+  const query = `
+    SELECT 
+      ca.appointment_id,
+      ca.appointment_date,
+      ca.appointment_time,
+      ca.status,
+      ca.appointment_type,
+      ca.notes,
+      gl.location_name,
+      gl.address,
+      gl.city,
+      gl.province,
+      gl.phone_number
+    FROM card_appointments ca
+    JOIN government_locations gl ON ca.location_id = gl.location_id
+    WHERE ca.user_id = ?
+    ORDER BY ca.appointment_date DESC, ca.appointment_time DESC
+  `;
+  
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error('Error fetching appointments:', err);
+      return res.status(500).json({ message: 'Erreur serveur' });
+    }
+    
+    res.json(results);
+  });
+});
+
+app.put('/api/appointments/:id/cancel', (req, res) => {
+  const appointmentId = req.params.id;
+  
+  const query = 'UPDATE card_appointments SET status = "annule" WHERE appointment_id = ?';
+  
+  db.query(query, [appointmentId], (err, result) => {
+    if (err) {
+      console.error('Error canceling appointment:', err);
+      return res.status(500).json({ message: 'Erreur lors de l\'annulation' });
+    }
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Rendez-vous introuvable' });
+    }
+    
+    res.json({ message: 'Rendez-vous annulé avec succès' });
+  });
+});
+
+app.post('/scan', (req, res) => {
+  const { uid } = req.body;
+  if (!uid) return res.status(400).json({ access: "DENIED", reason: "No UID" });
+
+  const query = `
+    SELECT u.prenom, u.nom, u.status
+    FROM rfid r
+    JOIN user_info u ON u.id = r.user_id
+    WHERE r.rfid_tag = ?
+  `;
+
+  db.query(query, [uid], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ access: "DENIED", reason: "DB error" });
+    }
+
+    if (results.length === 0) {
+      return res.status(200).json({ access: "DENIED", reason: "Unknown card" });
+    }
+
+    const user = results[0];
+    if (user.status !== 'approved') {
+      return res.status(200).json({ access: "DENIED", name: `${user.prenom} ${user.nom}`, reason: "Not approved" });
+    }
+
+    db.query("UPDATE rfid SET last_scan = NOW() WHERE rfid_tag = ?", [uid]);
+
+    res.status(200).json({
+      access: "GRANTED",
+      name: `${user.prenom} ${user.nom}`,
+      disability_category: "N/A"
+    });
+  });
+});
+
+app.get('/debug/db-test', (req, res) => {
+  db.query('SELECT 1 AS ok', (err, result) => {
+    if (err) {
+      console.error('DB connection failed:', err);
+      return res.status(500).json({ connected: false, error: err.message });
+    }
+    console.log('DB test success:', result);
+    res.json({ connected: true, result });
+  });
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Serveur démarré sur le port ${PORT}`);
+  console.log(`API: https://modiva-production.up.railway.app`);
+});

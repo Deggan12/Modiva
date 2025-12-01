@@ -5,388 +5,57 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Carte Canadienne du Handicap - Espace Utilisateur</title>
   <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f8f9fa;
-      margin: 0;
-      padding: 0;
-    }
-    
-    header {
-      background-color: #00205b; 
-      color: white;
-      text-align: center;
-      padding: 20px 0;
-      font-size: 1.5em;
-      font-weight: bold;
-    }
-    
-    .container {
-      max-width: 850px;
-      margin: 30px auto;
-      background-color: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      padding: 30px;
-    }
-    
-    h2 {
-      color: #00205b;
-      border-bottom: 2px solid #00205b;
-      padding-bottom: 8px;
-      margin-bottom: 15px;
-    }
-    
-    .info p {
-      margin: 10px 0;
-      line-height: 1.6;
-      font-size: 16px;
-    }
-    
-    .info strong {
-      color: #00205b;
-      font-weight: 600;
-    }
-    
-    .services ul {
-      list-style: none;
-      padding: 0;
-    }
-    
-    .services li {
-      background: #e6f2ff;
-      padding: 15px;
-      border-left: 4px solid #00205b;
-      border-radius: 6px;
-      margin-bottom: 12px;
-    }
-    
-    .service-name {
-      font-weight: bold;
-      color: #00205b;
-      font-size: 16px;
-      margin-bottom: 5px;
-    }
-    
-    .service-description {
-      color: #333;
-      font-size: 14px;
-      margin: 5px 0;
-    }
-    
-    .service-province {
-      font-size: 13px;
-      color: #666;
-      font-style: italic;
-      margin-top: 5px;
-    }
-    
-    .numero-section {
-      text-align: center;
-      margin: 40px 0;
-      padding: 30px;
-      background: linear-gradient(135deg, #667eea 0%, #306bcb 100%);
-      border-radius: 10px;
-      color: white;
-    }
-    
-    .numero-section h2 {
-      color: white;
-      border-bottom: 2px solid white;
-      padding-bottom: 10px;
-      margin-bottom: 20px;
-    }
-    
-    .numero-compte-display {
-      font-size: 36px;
-      font-weight: bold;
-      letter-spacing: 2px;
-      margin: 20px 0;
-      padding: 20px;
-      background-color: white;
-      color: #00205b;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    
-    .logout {
-      display: block;
-      text-align: center;
-      margin-top: 30px;
-      background-color: #6c757d;
-      color: white;
-      padding: 12px 30px;
-      border-radius: 6px;
-      text-decoration: none;
-      width: fit-content;
-      margin-left: auto;
-      margin-right: auto;
-      font-size: 16px;
-      font-weight: 600;
-    }
-    
-    .logout:hover { 
-      background-color: #5a6268; 
-    }
-    
-    .loading {
-      text-align: center;
-      padding: 40px;
-      color: #666;
-      font-size: 18px;
-    }
-    
-    .error-message {
-      background-color: #f8d7da;
-      color: #721c24;
-      padding: 20px;
-      border-radius: 8px;
-      margin: 20px 0;
-      text-align: center;
-      border-left: 4px solid #f5c6cb;
-    }
-    
-    .success-badge {
-      background-color: #28a745;
-      color: white;
-      padding: 5px 15px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      display: inline-block;
-      margin-left: 10px;
-    }
-    
-    .appointment-section {
-      background: #f8f9fa;
-      padding: 25px;
-      border-radius: 10px;
-      margin: 30px 0;
-      border: 2px solid #e0e0e0;
-    }
-    
-    .btn-primary {
-      background-color: #00205b;
-      color: white;
-      padding: 12px 25px;
-      border: none;
-      border-radius: 6px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-block;
-      text-decoration: none;
-      margin: 8px 5px;
-      transition: background-color 0.3s;
-    }
-    
-    .btn-primary:hover {
-      background-color: #003380;
-    }
-    
-    .btn-secondary {
-      background-color: #6c757d;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: background-color 0.3s;
-    }
-    
-    .btn-secondary:hover {
-      background-color: #5a6268;
-    }
-    
-    .btn-danger {
-      background-color: #dc3545;
-      color: white;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: background-color 0.3s;
-    }
-    
-    .btn-danger:hover {
-      background-color: #c82333;
-    }
-    
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.5);
-      overflow-y: auto;
-    }
-    
-    .modal-content {
-      background-color: white;
-      margin: 3% auto;
-      padding: 30px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 650px;
-      max-height: 85vh;
-      overflow-y: auto;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-    }
-    
-    .close {
-      color: #aaa;
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-      line-height: 20px;
-    }
-    
-    .close:hover {
-      color: #000;
-    }
-    
-    .form-group {
-      margin-bottom: 20px;
-    }
-    
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #00205b;
-      font-size: 15px;
-    }
-    
-    .form-group select,
-    .form-group input[type="date"],
-    .form-group textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 14px;
-      box-sizing: border-box;
-    }
-    
-    .form-group textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-    
-    .location-card {
-      background: white;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      padding: 15px;
-      margin: 10px 0;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    
-    .location-card:hover {
-      border-color: #00205b;
-      box-shadow: 0 2px 8px rgba(0,32,91,0.1);
-    }
-    
-    .location-card.selected {
-      border-color: #00205b;
-      background-color: #e6f2ff;
-    }
-    
-    .location-name {
-      font-weight: bold;
-      color: #00205b;
-      margin-bottom: 8px;
-      font-size: 16px;
-    }
-    
-    .location-details {
-      font-size: 14px;
-      color: #666;
-    }
-    
-    .location-details p {
-      margin: 5px 0;
-    }
-    
-    .appointment-card {
-      background: white;
-      border-left: 4px solid #28a745;
-      padding: 20px;
-      border-radius: 6px;
-      margin: 15px 0;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    
-    .appointment-card.cancelled {
-      border-left-color: #dc3545;
-      opacity: 0.7;
-    }
-    
-    .appointment-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      flex-wrap: wrap;
-    }
-    
-    .appointment-date {
-      font-size: 18px;
-      font-weight: bold;
-      color: #00205b;
-    }
-    
-    .appointment-status {
-      padding: 5px 15px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    
-    .status-confirme {
-      background-color: #28a745;
-      color: white;
-    }
-    
-    .status-annule {
-      background-color: #dc3545;
-      color: white;
-    }
-    
-    .time-slots {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 10px;
-      margin-top: 15px;
-    }
-    
-    .time-slot {
-      padding: 10px;
-      border: 2px solid #e0e0e0;
-      border-radius: 6px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-weight: 500;
-    }
-    
-    .time-slot:hover {
-      border-color: #00205b;
-      background-color: #f8f9fa;
-    }
-    
-    .time-slot.selected {
-      background-color: #00205b;
-      color: white;
-      border-color: #00205b;
-    }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; margin: 0; padding: 0; }
+    header { background-color: #00205b; color: white; text-align: center; padding: 20px 0; font-size: 1.5em; font-weight: bold; }
+    .container { max-width: 850px; margin: 30px auto; background-color: white; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); padding: 30px; }
+    h2 { color: #00205b; border-bottom: 2px solid #00205b; padding-bottom: 8px; margin-bottom: 15px; }
+    .info p { margin: 10px 0; line-height: 1.6; font-size: 16px; }
+    .info strong { color: #00205b; font-weight: 600; }
+    .services ul { list-style: none; padding: 0; }
+    .services li { background: #e6f2ff; padding: 15px; border-left: 4px solid #00205b; border-radius: 6px; margin-bottom: 12px; }
+    .service-name { font-weight: bold; color: #00205b; font-size: 16px; margin-bottom: 5px; }
+    .service-description { color: #333; font-size: 14px; margin: 5px 0; }
+    .service-province { font-size: 13px; color: #666; font-style: italic; margin-top: 5px; }
+    .numero-section { text-align: center; margin: 40px 0; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #306bcb 100%); border-radius: 10px; color: white; }
+    .numero-section h2 { color: white; border-bottom: 2px solid white; padding-bottom: 10px; margin-bottom: 20px; }
+    .numero-compte-display { font-size: 36px; font-weight: bold; letter-spacing: 2px; margin: 20px 0; padding: 20px; background-color: white; color: #00205b; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .logout { display: block; text-align: center; margin-top: 30px; background-color: #6c757d; color: white; padding: 12px 30px; border-radius: 6px; text-decoration: none; width: fit-content; margin-left: auto; margin-right: auto; font-size: 16px; font-weight: 600; }
+    .logout:hover { background-color: #5a6268; }
+    .loading { text-align: center; padding: 40px; color: #666; font-size: 18px; }
+    .error-message { background-color: #f8d7da; color: #721c24; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; border-left: 4px solid #f5c6cb; }
+    .success-badge { background-color: #28a745; color: white; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; margin-left: 10px; }
+    .appointment-section { background: #f8f9fa; padding: 25px; border-radius: 10px; margin: 30px 0; border: 2px solid #e0e0e0; }
+    .btn-primary { background-color: #00205b; color: white; padding: 12px 25px; border: none; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; display: inline-block; text-decoration: none; margin: 8px 5px; transition: background-color 0.3s; }
+    .btn-primary:hover { background-color: #003380; }
+    .btn-secondary { background-color: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; transition: background-color 0.3s; }
+    .btn-secondary:hover { background-color: #5a6268; }
+    .btn-danger { background-color: #dc3545; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; transition: background-color 0.3s; }
+    .btn-danger:hover { background-color: #c82333; }
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); overflow-y: auto; }
+    .modal-content { background-color: white; margin: 3% auto; padding: 30px; border-radius: 10px; width: 90%; max-width: 650px; max-height: 85vh; overflow-y: auto; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+    .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; line-height: 20px; }
+    .close:hover { color: #000; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #00205b; font-size: 15px; }
+    .form-group select, .form-group input[type="date"], .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .location-card { background: white; border: 2px solid #e0e0e0; border-radius: 8px; padding: 15px; margin: 10px 0; cursor: pointer; transition: all 0.3s; }
+    .location-card:hover { border-color: #00205b; box-shadow: 0 2px 8px rgba(0,32,91,0.1); }
+    .location-card.selected { border-color: #00205b; background-color: #e6f2ff; }
+    .location-name { font-weight: bold; color: #00205b; margin-bottom: 8px; font-size: 16px; }
+    .location-details { font-size: 14px; color: #666; }
+    .location-details p { margin: 5px 0; }
+    .appointment-card { background: white; border-left: 4px solid #28a745; padding: 20px; border-radius: 6px; margin: 15px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .appointment-card.cancelled { border-left-color: #dc3545; opacity: 0.7; }
+    .appointment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; }
+    .appointment-date { font-size: 18px; font-weight: bold; color: #00205b; }
+    .appointment-status { padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .status-confirme { background-color: #28a745; color: white; }
+    .status-annule { background-color: #dc3545; color: white; }
+    .time-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 15px; }
+    .time-slot { padding: 10px; border: 2px solid #e0e0e0; border-radius: 6px; text-align: center; cursor: pointer; transition: all 0.3s; font-weight: 500; }
+    .time-slot:hover { border-color: #00205b; background-color: #f8f9fa; }
+    .time-slot.selected { background-color: #00205b; color: white; border-color: #00205b; }
   </style>
 </head>
 
@@ -456,6 +125,7 @@
       <h2 id="modalTitle" style="color: #00205b; margin-top: 0;">Prendre Rendez-vous</h2>
       
       <form id="appointmentForm" onsubmit="submitAppointment(event)">
+        <input type="hidden" id="appointmentType" required>
         <div class="form-group">
           <label for="provinceSelect">Province</label>
           <select id="provinceSelect" required onchange="loadCities()">
@@ -512,356 +182,321 @@
     </div>
   </div>
 
-  <script>
-    const API_URL = 'https://modiva-production.up.railway.app';
-    
-    let userId, numeroCompte, userEmail;
-    let selectedLocationId = null;
-    let selectedTime = null;
-    let appointmentType = 'nouvelle_carte';
+<script>
+const API_URL = 'https://modiva-production.up.railway.app';
 
-    window.addEventListener('load', function() {
-      userId = sessionStorage.getItem('userId');
-      numeroCompte = sessionStorage.getItem('numeroCompte');
-      userEmail = sessionStorage.getItem('userEmail');
+let userId, numeroCompte, userEmail;
+let selectedLocationId = null;
+let selectedTime = null;
 
-      if (!userId || !numeroCompte) {
-        alert('Veuillez vous connecter');
-        window.location.href = 'page_connexion.html';
-        return;
-      }
-      
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('appointmentDate').setAttribute('min', today);
-      
-      loadUserData();
-      loadAppointments();
-    });
+window.addEventListener('load', function() {
+  userId = sessionStorage.getItem('userId');
+  numeroCompte = sessionStorage.getItem('numeroCompte');
+  userEmail = sessionStorage.getItem('userEmail');
 
-    async function loadUserData() {
-      try {
-        const userResponse = await fetch(`${API_URL}/api/user/${userId}`);
-        
-        if (!userResponse.ok) {
-          throw new Error('Erreur serveur: ' + userResponse.status);
-        }
-        
-        const userData = await userResponse.json();
+  if (!userId || !numeroCompte) {
+    alert('Veuillez vous connecter');
+    window.location.href = 'page_connexion.html';
+    return;
+  }
+  
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('appointmentDate').setAttribute('min', today);
+  
+  loadUserData();
+  loadAppointments();
+});
 
-        document.getElementById('prenom').textContent = userData.first_name || '';
-        document.getElementById('nom').textContent = userData.last_name || '';
-        document.getElementById('email').textContent = userData.email || '';
-        document.getElementById('adresse').textContent = userData.address || '';
-        document.getElementById('numeroCompteDisplay').textContent = userData.numero_de_compte || '';
+function openAppointmentModal(type) {
+  document.getElementById('appointmentType').value = type;
+  const title = type === 'nouvelle_carte' ? 
+    'Prendre Rendez-vous - Nouvelle Carte' : 
+    'Prendre Rendez-vous - Remplacement de Carte';
+  
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('appointmentModal').style.display = 'block';
+  
+  document.getElementById('appointmentForm').reset();
+  document.getElementById('locationsList').innerHTML = '<p style="color: #666;">Sélectionnez une ville pour voir les lieux disponibles</p>';
+  document.getElementById('timeSlots').innerHTML = '';
+  document.getElementById('citySelect').disabled = true;
+  document.getElementById('citySelect').innerHTML = '<option value="">Sélectionnez d\'abord une province</option>';
+  selectedLocationId = null;
+  selectedTime = null;
+}
 
-        const servicesResponse = await fetch(`${API_URL}/api/user/${userId}/services`);
-        
-        if (!servicesResponse.ok) {
-          throw new Error('Erreur serveur services: ' + servicesResponse.status);
-        }
-        
-        const servicesData = await servicesResponse.json();
+function closeAppointmentModal() {
+  document.getElementById('appointmentModal').style.display = 'none';
+}
 
-        const ul = document.getElementById('servicesList');
-        ul.innerHTML = '';
+async function loadUserData() {
+  try {
+    const userResponse = await fetch(`${API_URL}/api/user/${userId}`);
+    if (!userResponse.ok) throw new Error('Erreur serveur');
+    const userData = await userResponse.json();
 
-        if (servicesData.length === 0) {
-          ul.innerHTML = '<li>Aucun service disponible pour le moment.</li>';
-        } else {
-          servicesData.forEach(service => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-              <div class="service-name">${service.service_name}</div>
-              <div class="service-description">${service.service_description}</div>
-              <div class="service-province">Province: ${service.province}</div>
-            `;
-            ul.appendChild(li);
-          });
-        }
+    document.getElementById('prenom').textContent = userData.first_name || '';
+    document.getElementById('nom').textContent = userData.last_name || '';
+    document.getElementById('email').textContent = userData.email || '';
+    document.getElementById('adresse').textContent = userData.address || '';
+    document.getElementById('numeroCompteDisplay').textContent = userData.numero_de_compte || '';
 
-        document.getElementById('loadingDiv').style.display = 'none';
-        document.getElementById('contentDiv').style.display = 'block';
+    const servicesResponse = await fetch(`${API_URL}/api/user/${userId}/services`);
+    if (!servicesResponse.ok) throw new Error('Erreur serveur services');
+    const servicesData = await servicesResponse.json();
 
-      } catch (error) {
-        console.error('Error:', error);
-        document.getElementById('loadingDiv').style.display = 'none';
-        document.getElementById('errorMessage').textContent = error.message;
-        document.getElementById('errorDiv').style.display = 'block';
-      }
-    }
+    const ul = document.getElementById('servicesList');
+    ul.innerHTML = '';
 
-    async function loadAppointments() {
-      try {
-        const response = await fetch(`${API_URL}/api/user/${userId}/appointments`);
-        
-        if (!response.ok) {
-          console.error('Erreur lors du chargement des rendez-vous');
-          return;
-        }
-        
-        const appointments = await response.json();
-        
-        const container = document.getElementById('appointmentsList');
-        
-        if (appointments.length === 0) {
-          container.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">Aucun rendez-vous programmé</p>';
-          return;
-        }
-        
-        container.innerHTML = '<h3 style="color: #00205b; margin-top: 20px;">Mes Rendez-vous</h3>';
-        
-        appointments.forEach(apt => {
-          const card = document.createElement('div');
-          card.className = 'appointment-card' + (apt.status === 'annule' ? ' cancelled' : '');
-          
-          const date = new Date(apt.appointment_date).toLocaleDateString('fr-CA');
-          const statusText = apt.status === 'confirme' ? 'Confirmé' : 
-                            apt.status === 'annule' ? 'Annulé' : 'Complété';
-          const typeText = apt.appointment_type === 'nouvelle_carte' ? 'Nouvelle carte' : 'Remplacement';
-          
-          card.innerHTML = `
-            <div class="appointment-header">
-              <div class="appointment-date">${date} à ${apt.appointment_time.slice(0,5)}</div>
-              <span class="appointment-status status-${apt.status}">${statusText}</span>
-            </div>
-            <p><strong>Type:</strong> ${typeText}</p>
-            <p><strong>Lieu:</strong> ${apt.location_name}</p>
-            <p><strong>Adresse:</strong> ${apt.address}, ${apt.city}, ${apt.province}</p>
-            <p><strong>Téléphone:</strong> ${apt.phone_number}</p>
-            ${apt.notes ? `<p><strong>Notes:</strong> ${apt.notes}</p>` : ''}
-            ${apt.status === 'confirme' ? 
-              `<button class="btn-danger" style="margin-top: 10px;" onclick="cancelAppointment(${apt.appointment_id})">Annuler le rendez-vous</button>` : 
-              ''
-            }
-          `;
-          
-          container.appendChild(card);
-        });
-        
-      } catch (error) {
-        console.error('Erreur:', error);
-      }
-    }
-
-    function openAppointmentModal(type) {
-      appointmentType = type;
-      const title = type === 'nouvelle_carte' ? 
-        'Prendre Rendez-vous - Nouvelle Carte' : 
-        'Prendre Rendez-vous - Remplacement de Carte';
-      
-      document.getElementById('modalTitle').textContent = title;
-      document.getElementById('appointmentModal').style.display = 'block';
-      
-      document.getElementById('appointmentForm').reset();
-      document.getElementById('locationsList').innerHTML = '<p style="color: #666;">Sélectionnez une ville pour voir les lieux disponibles</p>';
-      document.getElementById('timeSlots').innerHTML = '';
-      document.getElementById('citySelect').disabled = true;
-      document.getElementById('citySelect').innerHTML = '<option value="">Sélectionnez d\'abord une province</option>';
-      selectedLocationId = null;
-      selectedTime = null;
-    }
-
-    function closeAppointmentModal() {
-      document.getElementById('appointmentModal').style.display = 'none';
-    }
-
-    async function loadCities() {
-      const province = document.getElementById('provinceSelect').value;
-      const citySelect = document.getElementById('citySelect');
-      
-      if (!province) {
-        citySelect.disabled = true;
-        citySelect.innerHTML = '<option value="">Sélectionnez d\'abord une province</option>';
-        return;
-      }
-      
-      try {
-        const response = await fetch(`${API_URL}/api/cities/${encodeURIComponent(province)}`);
-        const cities = await response.json();
-        
-        citySelect.disabled = false;
-        citySelect.innerHTML = '<option value="">Sélectionnez une ville</option>';
-        
-        cities.forEach(city => {
-          const option = document.createElement('option');
-          option.value = city;
-          option.textContent = city;
-          citySelect.appendChild(option);
-        });
-        
-      } catch (error) {
-        console.error('Erreur:', error);
-        alert('Erreur lors du chargement des villes');
-      }
-    }
-
-    async function loadLocations() {
-      const province = document.getElementById('provinceSelect').value;
-      const city = document.getElementById('citySelect').value;
-      const container = document.getElementById('locationsList');
-      
-      if (!province || !city) {
-        container.innerHTML = '<p style="color: #666;">Sélectionnez une ville pour voir les lieux disponibles</p>';
-        return;
-      }
-      
-      try {
-        const response = await fetch(`${API_URL}/api/locations/${encodeURIComponent(province)}/${encodeURIComponent(city)}`);
-        const locations = await response.json();
-        
-        if (locations.length === 0) {
-          container.innerHTML = '<p style="color: #dc3545;">Aucun lieu disponible dans cette ville</p>';
-          return;
-        }
-        
-        container.innerHTML = '';
-        
-        locations.forEach(loc => {
-          const card = document.createElement('div');
-          card.className = 'location-card';
-          card.onclick = function() { selectLocation(loc.location_id, card); };
-          
-          card.innerHTML = `
-            <div class="location-name">${loc.location_name}</div>
-            <div class="location-details">
-              <p>${loc.address}, ${loc.city}</p>
-              <p>Téléphone: ${loc.phone_number}</p>
-              <p>Code postal: ${loc.postal_code}</p>
-            </div>
-          `;
-          
-          container.appendChild(card);
-        });
-        
-      } catch (error) {
-        console.error('Erreur:', error);
-        alert('Erreur lors du chargement des lieux');
-      }
-    }
-
-    function selectLocation(locationId, cardElement) {
-      const allCards = document.querySelectorAll('.location-card');
-      allCards.forEach(card => card.classList.remove('selected'));
-      
-      cardElement.classList.add('selected');
-      selectedLocationId = locationId;
-      document.getElementById('selectedLocation').value = locationId;
-    }
-
-    function generateTimeSlots() {
-      const container = document.getElementById('timeSlots');
-      container.innerHTML = '';
-      
-      const times = [];
-      for (let hour = 9; hour <= 16; hour++) {
-        const minutes = [0, 30];
-        for (let i = 0; i < minutes.length; i++) {
-          const minute = minutes[i];
-          if (hour === 16 && minute === 30) break;
-          
-          const hourStr = hour.toString().padStart(2, '0');
-          const minuteStr = minute.toString().padStart(2, '0');
-          const timeStr = hourStr + ':' + minuteStr;
-          times.push(timeStr);
-        }
-      }
-      
-      times.forEach(time => {
-        const slot = document.createElement('div');
-        slot.className = 'time-slot';
-        slot.textContent = time;
-        slot.onclick = function() { selectTimeSlot(time, slot); };
-        container.appendChild(slot);
+    if (servicesData.length === 0) {
+      ul.innerHTML = '<li>Aucun service disponible pour le moment.</li>';
+    } else {
+      servicesData.forEach(service => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <div class="service-name">${service.service_name}</div>
+          <div class="service-description">${service.service_description}</div>
+          <div class="service-province">Province: ${service.province}</div>
+        `;
+        ul.appendChild(li);
       });
     }
 
-    function selectTimeSlot(time, slotElement) {
-      const allSlots = document.querySelectorAll('.time-slot');
-      allSlots.forEach(slot => slot.classList.remove('selected'));
-      
-      slotElement.classList.add('selected');
-      selectedTime = time;
-      document.getElementById('selectedTime').value = time;
-    }
+    document.getElementById('loadingDiv').style.display = 'none';
+    document.getElementById('contentDiv').style.display = 'block';
 
-    async function submitAppointment(event) {
-      event.preventDefault();
+  } catch (error) {
+    document.getElementById('loadingDiv').style.display = 'none';
+    document.getElementById('errorMessage').textContent = error.message;
+    document.getElementById('errorDiv').style.display = 'block';
+  }
+}
+
+async function loadAppointments() {
+  try {
+    const response = await fetch(`${API_URL}/api/user/${userId}/appointments`);
+    if (!response.ok) return;
+    const appointments = await response.json();
+    const container = document.getElementById('appointmentsList');
+    
+    if (appointments.length === 0) {
+      container.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">Aucun rendez-vous programmé</p>';
+      return;
+    }
+    
+    container.innerHTML = '<h3 style="color: #00205b; margin-top: 20px;">Mes Rendez-vous</h3>';
+    
+    appointments.forEach(apt => {
+      const card = document.createElement('div');
+      card.className = 'appointment-card' + (apt.status === 'annule' ? ' cancelled' : '');
       
-      if (!selectedLocationId) {
-        alert('Veuillez sélectionner un lieu');
-        return;
-      }
+      const date = new Date(apt.appointment_date).toLocaleDateString('fr-CA');
+      const statusText = apt.status === 'confirme' ? 'Confirmé' : 
+                        apt.status === 'annule' ? 'Annulé' : 'Complété';
+      const typeText = apt.appointment_type === 'nouvelle_carte' ? 'Nouvelle carte' : 'Remplacement';
       
-      if (!selectedTime) {
-        alert('Veuillez sélectionner une heure');
-        return;
-      }
-      
-      const appointmentData = {
-        userId: userId,
-        locationId: selectedLocationId,
-        appointmentDate: document.getElementById('appointmentDate').value,
-        appointmentTime: selectedTime + ':00',
-        appointmentType: appointmentType,
-        notes: document.getElementById('appointmentNotes').value
-      };
-      
-      try {
-        const response = await fetch(`${API_URL}/api/appointments`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(appointmentData)
-        });
-        
-        const result = await response.json();
-        
-        if (!response.ok) {
-          throw new Error(result.message || 'Erreur lors de la création du rendez-vous');
+      card.innerHTML = `
+        <div class="appointment-header">
+          <div class="appointment-date">${date} à ${apt.appointment_time.slice(0,5)}</div>
+          <span class="appointment-status status-${apt.status}">${statusText}</span>
+        </div>
+        <p><strong>Type:</strong> ${typeText}</p>
+        <p><strong>Lieu:</strong> ${apt.location_name}</p>
+        <p><strong>Adresse:</strong> ${apt.address}, ${apt.city}, ${apt.province}</p>
+        <p><strong>Téléphone:</strong> ${apt.phone_number}</p>
+        ${apt.notes ? `<p><strong>Notes:</strong> ${apt.notes}</p>` : ''}
+        ${apt.status === 'confirme' ? 
+          `<button class="btn-danger" style="margin-top: 10px;" onclick="cancelAppointment(${apt.appointment_id})">Annuler le rendez-vous</button>` : 
+          ''
         }
-        
-        alert('Rendez-vous confirmé avec succès!');
-        closeAppointmentModal();
-        loadAppointments();
-        
-      } catch (error) {
-        console.error('Erreur:', error);
-        alert(error.message);
-      }
-    }
-
-    async function cancelAppointment(appointmentId) {
-      if (!confirm('Êtes-vous sûr de vouloir annuler ce rendez-vous?')) {
-        return;
-      }
+      `;
       
-      try {
-        const response = await fetch(`${API_URL}/api/appointments/${appointmentId}/cancel`, {
-          method: 'PUT'
-        });
-        
-        const result = await response.json();
-        
-        if (!response.ok) {
-          throw new Error(result.message || 'Erreur lors de l\'annulation');
-        }
-        
-        alert('Rendez-vous annulé avec succès');
-        loadAppointments();
-        
-      } catch (error) {
-        console.error('Erreur:', error);
-        alert(error.message);
-      }
-    }
+      container.appendChild(card);
+    });
+    
+  } catch (error) {}
+}
 
-    window.onclick = function(event) {
-      const modal = document.getElementById('appointmentModal');
-      if (event.target == modal) {
-        closeAppointmentModal();
-      }
+async function loadCities() {
+  const province = document.getElementById('provinceSelect').value;
+  const citySelect = document.getElementById('citySelect');
+  
+  if (!province) {
+    citySelect.disabled = true;
+    citySelect.innerHTML = '<option value="">Sélectionnez d\'abord une province</option>';
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${API_URL}/api/cities/${encodeURIComponent(province)}`);
+    const cities = await response.json();
+    
+    citySelect.disabled = false;
+    citySelect.innerHTML = '<option value="">Sélectionnez une ville</option>';
+    
+    cities.forEach(city => {
+      const option = document.createElement('option');
+      option.value = city;
+      option.textContent = city;
+      citySelect.appendChild(option);
+    });
+    
+  } catch (error) {
+    alert('Erreur lors du chargement des villes');
+  }
+}
+
+async function loadLocations() {
+  const province = document.getElementById('provinceSelect').value;
+  const city = document.getElementById('citySelect').value;
+  const container = document.getElementById('locationsList');
+  
+  if (!province || !city) {
+    container.innerHTML = '<p style="color: #666;">Sélectionnez une ville pour voir les lieux disponibles</p>';
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${API_URL}/api/locations/${encodeURIComponent(province)}/${encodeURIComponent(city)}`);
+    const locations = await response.json();
+    
+    if (locations.length === 0) {
+      container.innerHTML = '<p style="color: #dc3545;">Aucun lieu disponible dans cette ville</p>';
+      return;
     }
-  </script>
+    
+    container.innerHTML = '';
+    
+    locations.forEach(loc => {
+      const card = document.createElement('div');
+      card.className = 'location-card';
+      card.onclick = function() { selectLocation(loc.location_id, card); };
+      
+      card.innerHTML = `
+        <div class="location-name">${loc.location_name}</div>
+        <div class="location-details">
+          <p>${loc.address}, ${loc.city}</p>
+          <p>Téléphone: ${loc.phone_number}</p>
+          <p>Code postal: ${loc.postal_code}</p>
+        </div>
+      `;
+      
+      container.appendChild(card);
+    });
+    
+  } catch (error) {
+    alert('Erreur lors du chargement des lieux');
+  }
+}
+
+function selectLocation(locationId, cardElement) {
+  const allCards = document.querySelectorAll('.location-card');
+  allCards.forEach(card => card.classList.remove('selected'));
+  
+  cardElement.classList.add('selected');
+  selectedLocationId = locationId;
+  document.getElementById('selectedLocation').value = locationId;
+}
+
+function generateTimeSlots() {
+  const container = document.getElementById('timeSlots');
+  container.innerHTML = '';
+  
+  const times = [];
+  for (let hour = 9; hour <= 16; hour++) {
+    const minutes = [0, 30];
+    for (let i = 0; i < minutes.length; i++) {
+      const minute = minutes[i];
+      if (hour === 16 && minute === 30) break;
+      
+      const hourStr = hour.toString().padStart(2, '0');
+      const minuteStr = minute.toString().padStart(2, '0');
+      const timeStr = hourStr + ':' + minuteStr;
+      times.push(timeStr);
+    }
+  }
+  
+  times.forEach(time => {
+    const slot = document.createElement('div');
+    slot.className = 'time-slot';
+    slot.textContent = time;
+    slot.onclick = function() { selectTimeSlot(time, slot); };
+    container.appendChild(slot);
+  });
+}
+
+function selectTimeSlot(time, slotElement) {
+  const allSlots = document.querySelectorAll('.time-slot');
+  allSlots.forEach(slot => slot.classList.remove('selected'));
+  
+  slotElement.classList.add('selected');
+  selectedTime = time;
+  document.getElementById('selectedTime').value = time;
+}
+
+async function submitAppointment(event) {
+  event.preventDefault();
+  
+  if (!selectedLocationId) {
+    alert('Veuillez sélectionner un lieu');
+    return;
+  }
+  
+  if (!selectedTime) {
+    alert('Veuillez sélectionner une heure');
+    return;
+  }
+  
+  const appointmentData = {
+    userId: userId,
+    locationId: selectedLocationId,
+    appointmentDate: document.getElementById('appointmentDate').value,
+    appointmentTime: selectedTime + ':00',
+    appointmentType: document.getElementById('appointmentType').value,
+    notes: document.getElementById('appointmentNotes').value
+  };
+  
+  try {
+    const response = await fetch(`${API_URL}/api/appointments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(appointmentData)
+    });
+    
+    const result = await response.json();
+    
+    if (!response.ok) throw new Error(result.message || 'Erreur lors de la création du rendez-vous');
+    
+    alert('Rendez-vous confirmé avec succès');
+    closeAppointmentModal();
+    loadAppointments();
+    
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+async function cancelAppointment(appointmentId) {
+  if (!confirm('Êtes-vous sûr de vouloir annuler ce rendez-vous?')) return;
+  
+  try {
+    const response = await fetch(`${API_URL}/api/appointments/${appointmentId}/cancel`, { method: 'PUT' });
+    const result = await response.json();
+    
+    if (!response.ok) throw new Error(result.message || 'Erreur lors de l\'annulation');
+    
+    alert('Rendez-vous annulé avec succès');
+    loadAppointments();
+    
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+window.onclick = function(event) {
+  const modal = document.getElementById('appointmentModal');
+  if (event.target == modal) closeAppointmentModal();
+}
+</script>
 </body>
 </html>
